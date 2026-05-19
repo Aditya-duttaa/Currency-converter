@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import InputBox from "./inputBox";
 import useCurrencyInfo from "./hooks/useCurrencyInfo";
 
@@ -7,15 +7,32 @@ function App() {
   const [from, setFrom] = useState("usd");
   const [to, setTo] = useState("inr");
   const [convertedAmount, setConvertedAmount] = useState("");
+  const [currencyNames, setCurrencyNames] = useState({});
 
+  // exchange rates
   const currencyInfo = useCurrencyInfo(from) || {};
+
+  // options
   const options = Object.keys(currencyInfo);
 
+  // fetch currency names
+  useEffect(() => {
+    fetch(
+      "https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies.json"
+    )
+      .then((res) => res.json())
+      .then((data) => setCurrencyNames(data))
+      .catch((err) => console.log(err));
+  }, []);
+
+  // convert function
   const convert = () => {
     if (!currencyInfo[to]) return;
+
     setConvertedAmount((amount * currencyInfo[to]).toFixed(2));
   };
 
+  // swap
   const swap = () => {
     setFrom(to);
     setTo(from);
@@ -48,6 +65,7 @@ function App() {
           label="FROM"
           amount={amount}
           currencyOptions={options}
+          currencyNames={currencyNames}
           selectCurrency={from}
           onAmountChange={setAmount}
           onCurrencyChange={setFrom}
@@ -68,6 +86,7 @@ function App() {
           label="TO"
           amount={convertedAmount}
           currencyOptions={options}
+          currencyNames={currencyNames}
           selectCurrency={to}
           amountDisable
           onCurrencyChange={setTo}
@@ -109,7 +128,7 @@ function App() {
           </h1>
 
           <p className="text-black/70 font-semibold z-10">
-            {to.toUpperCase()}
+            {currencyNames[to] || to.toUpperCase()}
           </p>
         </div>
       </div>
@@ -129,7 +148,6 @@ function App() {
           to { transform: rotate(360deg); }
         }
       `}</style>
-
     </div>
   );
 }

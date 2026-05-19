@@ -8,6 +8,7 @@ function InputBox({
   currencyOptions = [],
   selectCurrency = "usd",
   amountDisable = false,
+  currencyNames = {},
 }) {
   const id = useId();
 
@@ -20,6 +21,7 @@ function InputBox({
 
       <div className="flex gap-3 items-center">
 
+        {/* AMOUNT INPUT */}
         <input
           id={id}
           type="number"
@@ -30,14 +32,21 @@ function InputBox({
           placeholder="0"
         />
 
+        {/* CURRENCY SELECT */}
         <select
           value={selectCurrency}
           onChange={(e) => onCurrencyChange(e.target.value)}
-          className="w-1/2 bg-black/40 border border-white/10 p-2 rounded-lg outline-none"
+          className="w-1/2 bg-black/40 border border-white/10 p-2 rounded-lg outline-none text-sm"
         >
           {currencyOptions.map((cur) => (
-            <option key={cur} value={cur}>
-              {cur.toUpperCase()}
+            <option
+              key={cur}
+              value={cur}
+              className="bg-black text-white"
+            >
+              {currencyNames[cur]
+                ? `${currencyNames[cur]} (${cur.toUpperCase()})`
+                : cur.toUpperCase()}
             </option>
           ))}
         </select>
